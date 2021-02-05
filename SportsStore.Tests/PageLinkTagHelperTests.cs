@@ -43,7 +43,7 @@ namespace SportsStore.Tests
             //Act
             PageLinkTagHelper.Process(context, output);
 
-            // Assert
+            //Assert
             Assert.Equal(@"<a href=""Test/Page1"">1</a>"
                 + @"<a href=""Test/Page2"">2</a>"
                 + @"<a href=""Test/Page3"">3</a>",
