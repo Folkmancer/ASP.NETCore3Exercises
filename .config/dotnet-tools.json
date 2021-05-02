@@ -9,7 +9,7 @@
       ]
     },
     "microsoft.web.librarymanager.cli": {
-      "version": "2.0.96",
+      "version": "2.1.113",
       "commands": [
         "libman"
       ]

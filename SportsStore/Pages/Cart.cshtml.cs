@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SportsStore.Models;
-using SportsStore.Infrastructure;
 using System.Linq;
 
 namespace SportsStore.Pages
@@ -10,9 +9,10 @@ namespace SportsStore.Pages
     {
         private readonly IStoreRepository repository;
 
-        public CartModel(IStoreRepository repository)
+        public CartModel(IStoreRepository repository, Cart cartService)
         {
             this.repository = repository;
+            Cart = cartService;
         }
 
         public Cart Cart { get; set; }
@@ -21,7 +21,6 @@ namespace SportsStore.Pages
         public void OnGet(string returnUrl)
         {
             ReturnUrl = returnUrl ?? "/";
-            Cart = HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
         }
 
         public IActionResult OnPost(long productId, string returnUrl)
@@ -30,9 +29,18 @@ namespace SportsStore.Pages
                 .Where(product => product.ProductId == productId)
                 .FirstOrDefault();
 
-            Cart = HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
             Cart.AddItem(product, 1);
-            HttpContext.Session.SetJson("cart", Cart);
+
+            return RedirectToPage(new { returnUrl = returnUrl });
+        }
+
+        public IActionResult OnPostRemove(long productId, string returnUrl)
+        {
+            var product = Cart.Lines
+                .First(line => line.Product.ProductId == productId)
+                .Product;
+
+            Cart.RemoveLine(product);
 
             return RedirectToPage(new { returnUrl = returnUrl });
         }

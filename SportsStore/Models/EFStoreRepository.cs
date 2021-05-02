@@ -4,7 +4,7 @@ namespace SportsStore.Models
 {
     public class EFStoreRepository : IStoreRepository
     {
-        private SportsStoreDbContext context;
+        private readonly SportsStoreDbContext context;
 
         public EFStoreRepository(SportsStoreDbContext context)
         {

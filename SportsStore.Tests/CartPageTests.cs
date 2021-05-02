@@ -26,29 +26,11 @@ namespace SportsStore.Tests
                 .Returns(products.AsQueryable());
 
             var cart = new Cart();
-            
             cart.AddItem(product1, 2);
             cart.AddItem(product2, 1);
 
-            var mockSession = new Mock<ISession>();
-            var sessionData = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(cart));
-
-            mockSession.Setup(session => session.TryGetValue(It.IsAny<string>(), out sessionData));
-            
-            var mockHttpContext = new Mock<HttpContext>();
-
-            mockHttpContext.SetupGet(httpContext => httpContext.Session).Returns(mockSession.Object);
-
             //Act
-            var cartModel = new CartModel(mockRepository.Object)
-            {
-                PageContext =
-                {
-                    HttpContext = mockHttpContext.Object,
-                    RouteData = new RouteData(),
-                    ActionDescriptor = new CompiledPageActionDescriptor()
-                }
-            };
+            var cartModel = new CartModel(mockRepository.Object, cart);
 
             cartModel.OnGet("myUrl");
 
@@ -68,27 +50,9 @@ namespace SportsStore.Tests
                 .Returns(products.AsQueryable());
 
             var cart = new Cart();
-            var mockSession = new Mock<ISession>();
-
-            mockSession.Setup(session => session.Set(It.IsAny<string>(), It.IsAny<byte[]>()))
-                .Callback<string, byte[]>((key, val) => {
-                    cart = JsonSerializer.Deserialize<Cart>(Encoding.UTF8.GetString(val));
-                });
-
-            var mockHttpContext = new Mock<HttpContext>();
-
-            mockHttpContext.SetupGet(httpContext => httpContext.Session).Returns(mockSession.Object);
 
             //Act
-            var cartModel = new CartModel(mockRepository.Object)
-            {
-                PageContext =
-                {
-                    HttpContext = mockHttpContext.Object,
-                    RouteData = new RouteData(),
-                    ActionDescriptor = new CompiledPageActionDescriptor()
-                }
-            };
+            var cartModel = new CartModel(mockRepository.Object, cart);
 
             cartModel.OnPost(1, "myUrl");
 
